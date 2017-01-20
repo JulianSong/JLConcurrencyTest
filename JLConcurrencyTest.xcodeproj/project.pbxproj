@@ -10,10 +10,10 @@
 		C9C16B0C1E31B856007A0722 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C16B0B1E31B856007A0722 /* main.m */; };
 		C9C16B0F1E31B856007A0722 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C16B0E1E31B856007A0722 /* AppDelegate.m */; };
 		C9C16B121E31B856007A0722 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C16B111E31B856007A0722 /* MasterViewController.m */; };
-		C9C16B151E31B856007A0722 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C16B141E31B856007A0722 /* DetailViewController.m */; };
 		C9C16B181E31B856007A0722 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9C16B161E31B856007A0722 /* Main.storyboard */; };
 		C9C16B1A1E31B856007A0722 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9C16B191E31B856007A0722 /* Assets.xcassets */; };
 		C9C16B1D1E31B856007A0722 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9C16B1B1E31B856007A0722 /* LaunchScreen.storyboard */; };
+		C9C16B261E31E32E007A0722 /* JLGCDTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C16B251E31E32E007A0722 /* JLGCDTestViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,12 +23,12 @@
 		C9C16B0E1E31B856007A0722 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		C9C16B101E31B856007A0722 /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
 		C9C16B111E31B856007A0722 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
-		C9C16B131E31B856007A0722 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
-		C9C16B141E31B856007A0722 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		C9C16B171E31B856007A0722 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C9C16B191E31B856007A0722 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C9C16B1C1E31B856007A0722 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C9C16B1E1E31B856007A0722 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C9C16B241E31E32E007A0722 /* JLGCDTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JLGCDTestViewController.h; sourceTree = "<group>"; };
+		C9C16B251E31E32E007A0722 /* JLGCDTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JLGCDTestViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,8 +65,8 @@
 				C9C16B0E1E31B856007A0722 /* AppDelegate.m */,
 				C9C16B101E31B856007A0722 /* MasterViewController.h */,
 				C9C16B111E31B856007A0722 /* MasterViewController.m */,
-				C9C16B131E31B856007A0722 /* DetailViewController.h */,
-				C9C16B141E31B856007A0722 /* DetailViewController.m */,
+				C9C16B241E31E32E007A0722 /* JLGCDTestViewController.h */,
+				C9C16B251E31E32E007A0722 /* JLGCDTestViewController.m */,
 				C9C16B161E31B856007A0722 /* Main.storyboard */,
 				C9C16B191E31B856007A0722 /* Assets.xcassets */,
 				C9C16B1B1E31B856007A0722 /* LaunchScreen.storyboard */,
@@ -154,10 +154,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9C16B261E31E32E007A0722 /* JLGCDTestViewController.m in Sources */,
 				C9C16B0F1E31B856007A0722 /* AppDelegate.m in Sources */,
 				C9C16B121E31B856007A0722 /* MasterViewController.m in Sources */,
 				C9C16B0C1E31B856007A0722 /* main.m in Sources */,
-				C9C16B151E31B856007A0722 /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

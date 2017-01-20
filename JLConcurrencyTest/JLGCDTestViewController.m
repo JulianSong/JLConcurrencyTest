@@ -19,8 +19,8 @@
 @property(nonatomic,strong)UIButton *serialQueueAndAsyncBtn;
 
 @property(nonatomic,strong)UIButton *applayBtn;
-
 @property(nonatomic,strong)UIButton *semaphoresBtn;
+@property(nonatomic,strong)UIButton *groupBtn;
 @end
 
 @implementation JLGCDTestViewController
@@ -83,8 +83,15 @@
     [self.semaphoresBtn setTitle:@"Dispatch Semaphore" forState:UIControlStateNormal];
     self.semaphoresBtn.backgroundColor = self.view.tintColor;
     self.semaphoresBtn.layer.cornerRadius = 4;
-    [self.semaphoresBtn addTarget:self action:@selector(gcdsemaphores) forControlEvents:UIControlEventTouchUpInside];
+    [self.semaphoresBtn addTarget:self action:@selector(gcdSemaphores) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.semaphoresBtn];
+    
+    self.groupBtn = [[UIButton alloc] init];
+    [self.groupBtn setTitle:@"Dispatch Group" forState:UIControlStateNormal];
+    self.groupBtn.backgroundColor = self.view.tintColor;
+    self.groupBtn.layer.cornerRadius = 4;
+    [self.groupBtn addTarget:self action:@selector(gcdGroup) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.groupBtn];
 }
 
 - (void)viewDidLayoutSubviews
@@ -100,6 +107,8 @@
     self.applayBtn.frame = CGRectMake(10,374,CGRectGetWidth(self.view.bounds) - 20,40);
     
     self.semaphoresBtn.frame = CGRectMake(10,424,CGRectGetWidth(self.view.bounds) - 20,40);
+    
+    self.groupBtn.frame = CGRectMake(10,474,CGRectGetWidth(self.view.bounds) - 20,40);
 }
 
 - (void)globalQueueAndSync
@@ -260,13 +269,13 @@
 - (void)gcdSemaphores
 {
     NSArray *testArray = @[@"a",@"b",@"c",@"d",@"e",@"f",@"g",@"h",@"i",@"j",@"k",@"l",@"m",@"n"];
-    dispatch_queue_t aque = dispatch_queue_create("com.my.gcdsemaphores", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_queue_t aque = dispatch_queue_create("com.my.gcdSemaphores", DISPATCH_QUEUE_CONCURRENT);
     dispatch_semaphore_t a_semaphore = dispatch_semaphore_create(2);
     
     for (NSString *str in testArray) {
         dispatch_async(aque, ^{
             dispatch_semaphore_wait(a_semaphore, DISPATCH_TIME_FOREVER);
-            NSLog(@"semaphores    %@",str);
+            NSLog(@"Semaphores    %@",str);
             sleep(4);
             dispatch_semaphore_signal(a_semaphore);
         });
@@ -274,4 +283,31 @@
     NSLog(@"Semaphores all task had add to the queue");
 }
 
+- (void)gcdGroup
+{
+    dispatch_queue_t aque = dispatch_queue_create("com.my.gcdGroup", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_group_t a_group = dispatch_group_create();
+    dispatch_async(aque, ^{
+        dispatch_group_async(a_group, aque, ^{
+            NSLog(@"Group network request 1 start");
+            sleep(2);
+            NSLog(@"Group network request 1 end");
+        });
+        
+        dispatch_group_async(a_group, aque, ^{
+            NSLog(@"Group network request 2 start");
+            sleep(4);
+            NSLog(@"Group network request 2 end");
+        });
+        
+        dispatch_group_async(a_group, aque, ^{
+            NSLog(@"Group network request 3 start");
+            sleep(2);
+            NSLog(@"Group network request 3 end");
+        });
+        dispatch_group_wait(a_group, DISPATCH_TIME_FOREVER);
+        NSLog(@"Group all request was done");
+    });
+    
+}
 @end

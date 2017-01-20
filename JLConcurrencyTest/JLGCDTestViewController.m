@@ -19,6 +19,8 @@
 @property(nonatomic,strong)UIButton *serialQueueAndAsyncBtn;
 
 @property(nonatomic,strong)UIButton *applayBtn;
+
+@property(nonatomic,strong)UIButton *semaphoresBtn;
 @end
 
 @implementation JLGCDTestViewController
@@ -77,6 +79,12 @@
     [self.applayBtn addTarget:self action:@selector(gcdApplay) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.applayBtn];
 
+    self.semaphoresBtn = [[UIButton alloc] init];
+    [self.semaphoresBtn setTitle:@"Dispatch Semaphore" forState:UIControlStateNormal];
+    self.semaphoresBtn.backgroundColor = self.view.tintColor;
+    self.semaphoresBtn.layer.cornerRadius = 4;
+    [self.semaphoresBtn addTarget:self action:@selector(gcdsemaphores) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.semaphoresBtn];
 }
 
 - (void)viewDidLayoutSubviews
@@ -90,6 +98,8 @@
     self.serialQueueAndSyncBtn.frame = CGRectMake(10,274,CGRectGetWidth(self.view.bounds) - 20,40);
     self.serialQueueAndAsyncBtn.frame = CGRectMake(10,324,CGRectGetWidth(self.view.bounds) - 20,40);
     self.applayBtn.frame = CGRectMake(10,374,CGRectGetWidth(self.view.bounds) - 20,40);
+    
+    self.semaphoresBtn.frame = CGRectMake(10,424,CGRectGetWidth(self.view.bounds) - 20,40);
 }
 
 - (void)globalQueueAndSync
@@ -242,17 +252,26 @@
             [result insertObject:[NSString stringWithFormat:@"%@_%ld",str,i] atIndex:i];
             NSLog(@"Apply task on CONCURRENT queue %@ %ld end",str,i);
         });
-    ///});
+     //   NSLog(@"result is %@",result);
+   // });
     NSLog(@"result is %@",result);
 }
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)gcdSemaphores
+{
+    NSArray *testArray = @[@"a",@"b",@"c",@"d",@"e",@"f",@"g",@"h",@"i",@"j",@"k",@"l",@"m",@"n"];
+    dispatch_queue_t aque = dispatch_queue_create("com.my.gcdsemaphores", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_semaphore_t a_semaphore = dispatch_semaphore_create(2);
+    
+    for (NSString *str in testArray) {
+        dispatch_async(aque, ^{
+            dispatch_semaphore_wait(a_semaphore, DISPATCH_TIME_FOREVER);
+            NSLog(@"semaphores    %@",str);
+            sleep(4);
+            dispatch_semaphore_signal(a_semaphore);
+        });
+    }
+    NSLog(@"Semaphores all task had add to the queue");
 }
-*/
 
 @end

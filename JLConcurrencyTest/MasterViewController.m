@@ -7,7 +7,7 @@
 //
 
 #import "MasterViewController.h"
-
+#import "JLGCDSourceTestViewController.h"
 @interface MasterViewController ()
 
 @property NSMutableArray *objects;
@@ -19,11 +19,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.objects = [[NSMutableArray alloc] init];
-    [self.objects addObject:@"GCD"];
+    [self.objects addObject:@"GCD Dispatch Queues"];
+    [self.objects addObject:@"GCD Dispatch Sources"];
     [self.objects addObject:@"NSThread"];
     [self.objects addObject:@"NSOpreaation"];
     self.viewControllers = @{@"NSThread":@"JLGCDTestViewController",
-                             @"GCD":@"JLGCDTestViewController",
+                             @"GCD Dispatch Queues":@"JLGCDTestViewController",
+                             @"GCD Dispatch Sources":@"JLGCDSourceTestViewController",
                              @"NSOpreaation":@"JLGCDTestViewController",
                              };
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];

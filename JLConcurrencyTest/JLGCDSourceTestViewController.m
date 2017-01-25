@@ -12,6 +12,7 @@
 @property(nonatomic,strong)UIButton *dispatchSourcesAddBtn;
 @property(nonatomic,strong)UIButton *dispatchSourcesOrBtn;
 @property(nonatomic,strong)UIButton *dispatchTimeerSourcBtn;
+@property(nonatomic,strong)UIButton *dispatchSignalSourceBtn;
 
 @end
 
@@ -42,6 +43,13 @@
     self.dispatchTimeerSourcBtn.layer.cornerRadius = 4;
     [self.dispatchTimeerSourcBtn addTarget:self action:@selector(dispatchTimerSource) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.dispatchTimeerSourcBtn];
+    
+    self.dispatchSignalSourceBtn = [[UIButton alloc] init];
+    [self.dispatchSignalSourceBtn setTitle:@"Dispatch timer source" forState:UIControlStateNormal];
+    self.dispatchSignalSourceBtn.backgroundColor = self.view.tintColor;
+    self.dispatchSignalSourceBtn.layer.cornerRadius = 4;
+    [self.dispatchSignalSourceBtn addTarget:self action:@selector(dispatchSignalSource) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.dispatchSignalSourceBtn];
 }
 
 - (void)viewDidLayoutSubviews
@@ -50,6 +58,7 @@
     self.dispatchSourcesAddBtn.frame = CGRectMake(10,74,CGRectGetWidth(self.view.bounds) - 20,40);
     self.dispatchSourcesOrBtn.frame = CGRectMake(10,124,CGRectGetWidth(self.view.bounds) - 20,40);
     self.dispatchTimeerSourcBtn.frame = CGRectMake(10,174,CGRectGetWidth(self.view.bounds) - 20,40);
+    self.dispatchSignalSourceBtn.frame = CGRectMake(10,224,CGRectGetWidth(self.view.bounds) - 20,40);
 }
 
 - (void)dispatchSourcesAdd
@@ -146,4 +155,22 @@
     });
 }
 
+- (void)dispatchSignalSource
+{
+    //点击按钮后
+    dispatch_queue_t  myQueue = /* dispatch_get_main_queue(); */ dispatch_queue_create("com.my.dispatchSignalSource",NULL);
+    
+    dispatch_source_t signalSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL,
+                                                     SIGSTOP, 0, myQueue);
+    if (signalSource) {
+        dispatch_source_set_event_handler(signalSource, ^{
+            long value = dispatch_source_get_data(signalSource);
+            long mask = dispatch_source_get_mask(signalSource);
+            NSLog(@"value is %ld",value);
+            NSLog(@"mask is %ld",mask);
+        });
+        
+        dispatch_resume(signalSource);
+    }
+}
 @end

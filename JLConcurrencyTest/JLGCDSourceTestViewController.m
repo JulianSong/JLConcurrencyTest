@@ -45,7 +45,7 @@
     [self.view addSubview:self.dispatchTimeerSourcBtn];
     
     self.dispatchSignalSourceBtn = [[UIButton alloc] init];
-    [self.dispatchSignalSourceBtn setTitle:@"Dispatch timer source" forState:UIControlStateNormal];
+    [self.dispatchSignalSourceBtn setTitle:@"Dispatch signal source" forState:UIControlStateNormal];
     self.dispatchSignalSourceBtn.backgroundColor = self.view.tintColor;
     self.dispatchSignalSourceBtn.layer.cornerRadius = 4;
     [self.dispatchSignalSourceBtn addTarget:self action:@selector(dispatchSignalSource) forControlEvents:UIControlEventTouchUpInside];

@@ -7,11 +7,13 @@
 //
 
 #import "JLOperationTestViewController.h"
-
+#import "JLTestNonconcurrentOperation.h"
 @interface JLOperationTestViewController ()
 @property(nonatomic,strong)UIButton *invocationOperationBtn;
 @property(nonatomic,strong)UIButton *blockOperationBtn;
 @property(nonatomic,strong)UIButton *dependencyOperationesBtn;
+@property(nonatomic,strong)UIButton *nonconcurrentOperationesBtn;
+
 @end
 
 @implementation JLOperationTestViewController
@@ -39,6 +41,13 @@
     self.dependencyOperationesBtn.layer.cornerRadius = 4;
     [self.dependencyOperationesBtn addTarget:self action:@selector(dependencyOperationes) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.dependencyOperationesBtn];
+    
+    self.nonconcurrentOperationesBtn = [[UIButton alloc] init];
+    [self.nonconcurrentOperationesBtn setTitle:@"Dependency operationes" forState:UIControlStateNormal];
+    self.nonconcurrentOperationesBtn.backgroundColor = self.view.tintColor;
+    self.nonconcurrentOperationesBtn.layer.cornerRadius = 4;
+    [self.nonconcurrentOperationesBtn addTarget:self action:@selector(nonconcurrentOperationes) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.nonconcurrentOperationesBtn];
 }
 
 - (void)viewDidLayoutSubviews
@@ -47,7 +56,7 @@
     self.invocationOperationBtn.frame = CGRectMake(10,74,CGRectGetWidth(self.view.bounds) - 20,40);
     self.blockOperationBtn.frame = CGRectMake(10,124,CGRectGetWidth(self.view.bounds) - 20,40);
     self.dependencyOperationesBtn.frame = CGRectMake(10,174,CGRectGetWidth(self.view.bounds) - 20,40);
-//    self.dispatchSignalSourceBtn.frame = CGRectMake(10,224,CGRectGetWidth(self.view.bounds) - 20,40);
+    self.nonconcurrentOperationesBtn.frame = CGRectMake(10,224,CGRectGetWidth(self.view.bounds) - 20,40);
     
 //    self.dispatchProcessSourceBtn.frame = CGRectMake(10,224,CGRectGetWidth(self.view.bounds) - 20,40);
 }
@@ -104,14 +113,18 @@
     [blockOpt2 start];
     [blockOpt3 start];
 }
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+/**
+ opreation 直接通过 start 执行的时候将会在当前线程同步执行，如果房屋queue中则会异步执行，
+ 相较于dispatch operation可以取消任务的执行。
+ */
+- (void)nonconcurrentOperationes
+{
+    
+    JLTestNonconcurrentOperation *tnOpt = [[JLTestNonconcurrentOperation alloc] init];
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    [queue addOperation:tnOpt];
+//    [tnOpt start];
 }
-*/
 
 @end

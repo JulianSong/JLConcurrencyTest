@@ -8,12 +8,13 @@
 
 #import "JLOperationTestViewController.h"
 #import "JLTestNonconcurrentOperation.h"
+#import "JLTestConcurrentOperation.h"
 @interface JLOperationTestViewController ()
 @property(nonatomic,strong)UIButton *invocationOperationBtn;
 @property(nonatomic,strong)UIButton *blockOperationBtn;
 @property(nonatomic,strong)UIButton *dependencyOperationesBtn;
 @property(nonatomic,strong)UIButton *nonconcurrentOperationesBtn;
-
+@property(nonatomic,strong)UIButton *concurrentOperationesBtn;
 @end
 
 @implementation JLOperationTestViewController
@@ -43,11 +44,18 @@
     [self.view addSubview:self.dependencyOperationesBtn];
     
     self.nonconcurrentOperationesBtn = [[UIButton alloc] init];
-    [self.nonconcurrentOperationesBtn setTitle:@"Dependency operationes" forState:UIControlStateNormal];
+    [self.nonconcurrentOperationesBtn setTitle:@"Nonconcurrent operation" forState:UIControlStateNormal];
     self.nonconcurrentOperationesBtn.backgroundColor = self.view.tintColor;
     self.nonconcurrentOperationesBtn.layer.cornerRadius = 4;
     [self.nonconcurrentOperationesBtn addTarget:self action:@selector(nonconcurrentOperationes) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.nonconcurrentOperationesBtn];
+    
+    self.concurrentOperationesBtn = [[UIButton alloc] init];
+    [self.concurrentOperationesBtn setTitle:@"Concurrent operationes" forState:UIControlStateNormal];
+    self.concurrentOperationesBtn.backgroundColor = self.view.tintColor;
+    self.concurrentOperationesBtn.layer.cornerRadius = 4;
+    [self.concurrentOperationesBtn addTarget:self action:@selector(concurrentOperationes) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.concurrentOperationesBtn];
 }
 
 - (void)viewDidLayoutSubviews
@@ -58,7 +66,7 @@
     self.dependencyOperationesBtn.frame = CGRectMake(10,174,CGRectGetWidth(self.view.bounds) - 20,40);
     self.nonconcurrentOperationesBtn.frame = CGRectMake(10,224,CGRectGetWidth(self.view.bounds) - 20,40);
     
-//    self.dispatchProcessSourceBtn.frame = CGRectMake(10,224,CGRectGetWidth(self.view.bounds) - 20,40);
+    self.concurrentOperationesBtn.frame = CGRectMake(10,274,CGRectGetWidth(self.view.bounds) - 20,40);
 }
 
 - (void)task
@@ -127,4 +135,9 @@
 //    [tnOpt start];
 }
 
+- (void)concurrentOperationes
+{
+    JLTestConcurrentOperation *tnOpt = [[JLTestConcurrentOperation alloc] init];
+    [tnOpt start];
+}
 @end

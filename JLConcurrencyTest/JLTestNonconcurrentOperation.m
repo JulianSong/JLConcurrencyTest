@@ -8,16 +8,27 @@
 
 #import "JLTestNonconcurrentOperation.h"
 
-@implementation JLTestNonconcurrentOperationzhijie
+@implementation JLTestNonconcurrentOperation
 - (void)main
 {
-    NSLog(@"JLTestNonconcurrentOperation");
-    NSThread *current = [NSThread currentThread];
-    NSThread *main = [NSThread mainThread];
-    if (main == current) {
-        NSLog(@"main thread and current thead are same");
-    }else{
-        NSLog(@"main thread and current thead are diff");
+    @try {
+        BOOL isDone = NO;
+        while (![self isCancelled] && !isDone) {
+            NSLog(@"JLTestNonconcurrentOperation");
+            NSThread *current = [NSThread currentThread];
+            NSThread *main = [NSThread mainThread];
+            if (main == current) {
+                NSLog(@"main thread and current thead are same");
+            }else{
+                NSLog(@"main thread and current thead are diff");
+            }
+            isDone = YES;
+        }
+    } @catch (NSException *exception) {
+        
+    } @finally {
+        
     }
 }
+
 @end

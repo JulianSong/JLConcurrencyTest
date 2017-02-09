@@ -59,11 +59,23 @@
                 NSLog(@"main thread and current thead are diff");
             }
             isDone = YES;
+            [self completeOperation];
         }
     } @catch (NSException *exception) {
         
     } @finally {
         
     }
+}
+
+- (void)completeOperation {
+    [self willChangeValueForKey:@"isFinished"];
+    [self willChangeValueForKey:@"isExecuting"];
+    
+    executing = NO;
+    finished = YES;
+    
+    [self didChangeValueForKey:@"isExecuting"];
+    [self didChangeValueForKey:@"isFinished"];
 }
 @end

@@ -100,15 +100,14 @@
 
 - (void)dependencyOperationes
 {
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     NSBlockOperation *blockOpt1 = [NSBlockOperation blockOperationWithBlock:^{
         NSLog(@"blockOpt1");
         sleep(2);
-        
     }];
 
     NSBlockOperation *blockOpt2 = [NSBlockOperation blockOperationWithBlock:^{
         NSLog(@"blockOpt2");
-        sleep(2);
     }];
     NSBlockOperation *blockOpt3 = [NSBlockOperation blockOperationWithBlock:^{
         NSLog(@"blockOpt3");
@@ -117,9 +116,13 @@
     [blockOpt3 addDependency:blockOpt1];
     [blockOpt3 addDependency:blockOpt2];
     
-    [blockOpt1 start];
-    [blockOpt2 start];
-    [blockOpt3 start];
+//    [blockOpt1 start];
+//    [blockOpt2 start];
+//    [blockOpt3 start];
+    [queue addOperation:blockOpt3];
+    [queue addOperation:blockOpt2];
+    [queue addOperation:blockOpt1];
+    
 }
 
 /**

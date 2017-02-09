@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C934E94B1E4C6FC100F7D113 /* JLTestThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C934E94A1E4C6FC100F7D113 /* JLTestThreadViewController.m */; };
 		C945CC681E35EA5D00485922 /* JLGCDSourceTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C945CC671E35EA5D00485922 /* JLGCDSourceTestViewController.m */; };
 		C95CD2F51E4972ED008D285D /* JLTestConcurrentOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = C95CD2F41E4972ED008D285D /* JLTestConcurrentOperation.m */; };
 		C995C9DF1E45D26A00A7E858 /* JLOperationTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C995C9DE1E45D26A00A7E858 /* JLOperationTestViewController.m */; };
@@ -22,6 +23,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C934E9491E4C6FC100F7D113 /* JLTestThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JLTestThreadViewController.h; sourceTree = "<group>"; };
+		C934E94A1E4C6FC100F7D113 /* JLTestThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JLTestThreadViewController.m; sourceTree = "<group>"; };
 		C945CC661E35EA5D00485922 /* JLGCDSourceTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JLGCDSourceTestViewController.h; sourceTree = "<group>"; };
 		C945CC671E35EA5D00485922 /* JLGCDSourceTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JLGCDSourceTestViewController.m; sourceTree = "<group>"; };
 		C95CD2F31E4972ED008D285D /* JLTestConcurrentOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JLTestConcurrentOperation.h; sourceTree = "<group>"; };
@@ -90,6 +93,8 @@
 				C995C9E11E4868BE00A7E858 /* JLTestNonconcurrentOperation.m */,
 				C95CD2F31E4972ED008D285D /* JLTestConcurrentOperation.h */,
 				C95CD2F41E4972ED008D285D /* JLTestConcurrentOperation.m */,
+				C934E9491E4C6FC100F7D113 /* JLTestThreadViewController.h */,
+				C934E94A1E4C6FC100F7D113 /* JLTestThreadViewController.m */,
 				C9C16B161E31B856007A0722 /* Main.storyboard */,
 				C9C16B191E31B856007A0722 /* Assets.xcassets */,
 				C9C16B1B1E31B856007A0722 /* LaunchScreen.storyboard */,
@@ -181,6 +186,7 @@
 				C9C16B0F1E31B856007A0722 /* AppDelegate.m in Sources */,
 				C995C9DF1E45D26A00A7E858 /* JLOperationTestViewController.m in Sources */,
 				C945CC681E35EA5D00485922 /* JLGCDSourceTestViewController.m in Sources */,
+				C934E94B1E4C6FC100F7D113 /* JLTestThreadViewController.m in Sources */,
 				C9C16B281E321D8E007A0722 /* README.md in Sources */,
 				C9C16B121E31B856007A0722 /* MasterViewController.m in Sources */,
 				C95CD2F51E4972ED008D285D /* JLTestConcurrentOperation.m in Sources */,

@@ -9,6 +9,7 @@
 #import "MasterViewController.h"
 #import "JLGCDSourceTestViewController.h"
 #import "JLOperationTestViewController.h"
+#import "JLTestThreadViewController.h"
 @interface MasterViewController ()
 
 @property NSMutableArray *objects;
@@ -19,12 +20,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.layer.cornerRadius = 4;
+    self.view.layer.shadowOpacity = 0.5;
     self.objects = [[NSMutableArray alloc] init];
     [self.objects addObject:@"GCD Dispatch Queues"];
     [self.objects addObject:@"GCD Dispatch Sources"];
-    [self.objects addObject:@"NSThread"];
     [self.objects addObject:@"NSOpreaation"];
-    self.viewControllers = @{@"NSThread":@"JLGCDTestViewController",
+    [self.objects addObject:@"NSThread"];
+    self.viewControllers = @{@"NSThread":@"JLTestThreadViewController",
                              @"GCD Dispatch Queues":@"JLGCDTestViewController",
                              @"GCD Dispatch Sources":@"JLGCDSourceTestViewController",
                              @"NSOpreaation":@"JLOperationTestViewController",

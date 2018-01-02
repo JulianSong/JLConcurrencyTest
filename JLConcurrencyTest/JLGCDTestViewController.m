@@ -21,6 +21,7 @@
 @property(nonatomic,strong)UIButton *applayBtn;
 @property(nonatomic,strong)UIButton *semaphoresBtn;
 @property(nonatomic,strong)UIButton *groupBtn;
+@property(nonatomic,strong)UIButton *barrierBtn;
 @end
 
 @implementation JLGCDTestViewController
@@ -92,6 +93,13 @@
     self.groupBtn.layer.cornerRadius = 4;
     [self.groupBtn addTarget:self action:@selector(gcdGroup) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.groupBtn];
+    
+    self.barrierBtn = [[UIButton alloc] init];
+    [self.barrierBtn setTitle:@"Dispatch Barrier" forState:UIControlStateNormal];
+    self.barrierBtn.backgroundColor = self.view.tintColor;
+    self.barrierBtn.layer.cornerRadius = 4;
+    [self.barrierBtn addTarget:self action:@selector(barrier) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.barrierBtn];
 }
 
 - (void)viewDidLayoutSubviews
@@ -109,7 +117,10 @@
     self.semaphoresBtn.frame = CGRectMake(10,424,CGRectGetWidth(self.view.bounds) - 20,40);
     
     self.groupBtn.frame = CGRectMake(10,474,CGRectGetWidth(self.view.bounds) - 20,40);
+    self.barrierBtn.frame = CGRectMake(10,524,CGRectGetWidth(self.view.bounds) - 20,40);
 }
+
+#pragma mark- 队列分发及死锁问题
 
 - (void)globalQueueAndSync
 {
@@ -169,7 +180,7 @@
         /*
          输出：current thread is <NSThread: 0x604000065e80>{number = 1, name = main}
          作为优化系统会把sync的block分派到当前线程执行
-         系统不会retain 目标队列（target queue）
+         因此系统不会retain 目标队列（target queue），如果queue作为宿主的属性必须声明为strong类型。
          且不会对block做Block_copy
          */
         NSLog(@"Concurrent_Queue_And_Sync task 1 start");
@@ -187,6 +198,10 @@
      在同步队列中向当前同步队列异步分派任务会造成死锁。
      */
     dispatch_async(dispatch_get_main_queue(), ^{
+        /*
+         async时系统会retain 目标队列（target queue），并在block执行完成后释放。
+         系统会对block做Block_copy 和Block_release
+         */
         NSLog(@"Concurrent_Queue_And_Sync task 3 start");
         sleep(3);
         NSLog(@"Concurrent_Queue_And_Sync task 3 end");
@@ -337,21 +352,46 @@
     NSLog(@"result is %@",result);
 }
 
+#pragma mark- 同步问题
+
 - (void)gcdSemaphores
 {
     NSArray *testArray = @[@"a",@"b",@"c",@"d",@"e",@"f",@"g",@"h",@"i",@"j",@"k",@"l",@"m",@"n"];
-    dispatch_queue_t aque = dispatch_queue_create("com.my.gcdSemaphores", DISPATCH_QUEUE_CONCURRENT);
-    dispatch_semaphore_t a_semaphore = dispatch_semaphore_create(2);
+    dispatch_queue_t customQueue = dispatch_queue_create("com.my.gcdSemaphores.customQueue", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t productQueue = dispatch_queue_create("com.my.gcdSemaphores.productQueue", DISPATCH_QUEUE_CONCURRENT);
     
-    for (NSString *str in testArray) {
-        dispatch_async(aque, ^{
+    dispatch_semaphore_t a_semaphore = dispatch_semaphore_create(1);
+    NSMutableArray *resultArray = [[NSMutableArray alloc] init];
+    dispatch_async(customQueue, ^{
+        while (true) {
+            NSLog(@"dispatch_semaphore_wait 1 start");
             dispatch_semaphore_wait(a_semaphore, DISPATCH_TIME_FOREVER);
-            NSLog(@"Semaphores    %@",str);
-            sleep(4);
+            NSLog(@"dispatch_semaphore_wait 1 end");
+          if (resultArray.count>0) {
+                NSLog(@"print %@",resultArray.firstObject);
+                [resultArray removeObjectAtIndex:0];
+            }
+            int x = arc4random() % testArray.count;
+            sleep(x);
             dispatch_semaphore_signal(a_semaphore);
+            NSLog(@"dispatch_semaphore_signal 1");
+        }
+    });
+    
+    for (NSString *item in testArray) {
+        dispatch_async(productQueue, ^{
+            NSLog(@"dispatch_semaphore_wait 2 start");
+            dispatch_semaphore_wait(a_semaphore, DISPATCH_TIME_FOREVER);
+            NSLog(@"dispatch_semaphore_wait 2 end");
+            NSLog(@"add %@",item);
+            [resultArray addObject:item];
+            int x = arc4random() % testArray.count;
+            dispatch_semaphore_signal(a_semaphore);
+//            sleep(x);
+            NSLog(@"dispatch_semaphore_signal 2");
+
         });
     }
-    NSLog(@"Semaphores all task had add to the queue");
 }
 
 - (void)gcdGroup
@@ -379,6 +419,46 @@
         dispatch_group_wait(a_group, DISPATCH_TIME_FOREVER);
         NSLog(@"Group all request was done");
     });
+}
+
+- (void)barrier
+{
+    __block NSString *brodcast = @"start";
+    dispatch_queue_t customQueue = dispatch_queue_create("com.my.gcdSemaphores.customQueue", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_queue_t productQueue = dispatch_queue_create("com.my.gcdSemaphores.productQueue", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_async(customQueue, ^{
+        while (true) {
+            dispatch_async(productQueue, ^{
+                NSLog(@"brodcast is %@",brodcast);
+            });
+        }
+    });
     
+    dispatch_async(customQueue, ^{
+        while (true) {
+            int x = arc4random() % 10;
+            /*
+             使用 barrier async 把block添加到queue之后，该block会等到之前所有block全部执行完成后在执行。且阻塞后面添加的block直到该block执行完成。
+             barrier async  只能使用在自己创建的异步队列上，如果使用在同步队列或者全局队列则相当于dispatch_async
+             适用于属于某个特定共享数据有大量访问但是有小量修改的地方。
+             */
+            dispatch_barrier_async(productQueue, ^{
+                brodcast = [NSNumber numberWithInt:x].description;
+                NSLog(@"reset brodcast to %@",brodcast);
+//                sleep(x);
+            });
+            sleep(x);
+            
+            /*
+             使用 barrier sync 把block添加到queue之后，该block会等到之前所有block全部执行完成后在执行。且阻塞后面添加的block直到该block执行完成。
+             barrier sync只能使用在自己创建的异步队列上，如果使用在同步队列或者全局队列则相当于dispatch_sync
+             因为dispatch_barrier_sync会阻塞其目标队列，因此在当前队列上执行dispatch_barrier_sync 会导致死锁
+             因为dispatch_barrier_sync会阻塞当前队列，当其目标队列有大量Block未执行完毕时候会造成当前队列的等待。
+             */
+//            dispatch_barrier_sync(productQueue, ^{
+//
+//            });
+        }
+    });
 }
 @end

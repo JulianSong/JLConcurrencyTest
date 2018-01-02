@@ -90,16 +90,16 @@
     dispatch_source_merge_data(source, 1);
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
-        //sleep(2);
+        sleep(2);
         dispatch_source_merge_data(source, 2);
     });
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
-        //sleep(5);
+        sleep(5);
         dispatch_source_merge_data(source, 3);
     });
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
-        //sleep(5);
+        sleep(5);
         dispatch_source_merge_data(source, 4);
     });
     

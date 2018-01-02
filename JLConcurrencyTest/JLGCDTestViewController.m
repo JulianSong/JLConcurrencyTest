@@ -367,7 +367,7 @@
             NSLog(@"dispatch_semaphore_wait 1 start");
             dispatch_semaphore_wait(a_semaphore, DISPATCH_TIME_FOREVER);
             NSLog(@"dispatch_semaphore_wait 1 end");
-          if (resultArray.count>0) {
+            if (resultArray.count>0) {
                 NSLog(@"print %@",resultArray.firstObject);
                 [resultArray removeObjectAtIndex:0];
             }
@@ -385,9 +385,7 @@
             NSLog(@"dispatch_semaphore_wait 2 end");
             NSLog(@"add %@",item);
             [resultArray addObject:item];
-            int x = arc4random() % testArray.count;
             dispatch_semaphore_signal(a_semaphore);
-//            sleep(x);
             NSLog(@"dispatch_semaphore_signal 2");
 
         });
@@ -398,26 +396,52 @@
 {
     dispatch_queue_t aque = dispatch_queue_create("com.my.gcdGroup", DISPATCH_QUEUE_CONCURRENT);
     dispatch_group_t a_group = dispatch_group_create();
+    
     dispatch_async(aque, ^{
         dispatch_group_async(a_group, aque, ^{
-            NSLog(@"Group network request 1 start");
+            NSLog(@"a_group network request 1 start");
             sleep(2);
-            NSLog(@"Group network request 1 end");
+            NSLog(@"a_group network request 1 end");
         });
         
         dispatch_group_async(a_group, aque, ^{
-            NSLog(@"Group network request 2 start");
+            NSLog(@"a_group network request 2 start");
             sleep(4);
-            NSLog(@"Group network request 2 end");
+            NSLog(@"a_group network request 2 end");
         });
         
         dispatch_group_async(a_group, aque, ^{
-            NSLog(@"Group network request 3 start");
+            NSLog(@"a_group network request 3 start");
             sleep(2);
-            NSLog(@"Group network request 3 end");
+            NSLog(@"a_group network request 3 end");
         });
         dispatch_group_wait(a_group, DISPATCH_TIME_FOREVER);
-        NSLog(@"Group all request was done");
+        NSLog(@"a_group all request was done");
+    });
+    
+    dispatch_group_t b_group = dispatch_group_create();
+    dispatch_group_async(b_group, aque, ^{
+        NSLog(@"b_group network request 4 start");
+        sleep(2);
+        NSLog(@"b_group network request 4 end");
+    });
+    
+    dispatch_group_async(a_group, aque, ^{
+        NSLog(@"b_group network request 5 start");
+        sleep(4);
+        NSLog(@"b_group network request 5 end");
+    });
+
+    dispatch_async(aque, ^{
+        dispatch_group_enter(b_group);
+        NSLog(@"b_group network request 6 start");
+        sleep(4);
+        NSLog(@"b_group network request 6 end");
+        dispatch_group_leave(b_group);
+    });
+    
+   dispatch_group_notify(b_group,aque, ^{
+        NSLog(@"b_group all request was done");
     });
 }
 

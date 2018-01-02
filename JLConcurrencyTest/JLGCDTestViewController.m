@@ -113,6 +113,7 @@
 
 - (void)globalQueueAndSync
 {
+    //sync 分配任务会阻塞当前线程
     dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,0), ^{
         sleep(2);
         NSLog(@"Global_Queue_And_Sync task 1");
@@ -159,9 +160,18 @@
 
 - (void)concurrentQueueAndSync
 {
+    //sync 分配任务会阻塞当前线程
     dispatch_queue_t aque = dispatch_queue_create("com.my.concurrentQueueAndSync", DISPATCH_QUEUE_CONCURRENT);
     
     dispatch_sync(aque, ^{
+        NSThread *current = [NSThread  currentThread];
+        NSLog(@"current thread is %@",current);
+        /*
+         输出：current thread is <NSThread: 0x604000065e80>{number = 1, name = main}
+         作为优化系统会把sync的block分派到当前线程执行
+         系统不会retain 目标队列（target queue）
+         且不会对block做Block_copy
+         */
         NSLog(@"Concurrent_Queue_And_Sync task 1 start");
         sleep(2);
         NSLog(@"Concurrent_Queue_And_Sync task 1 end");
@@ -173,11 +183,24 @@
         NSLog(@"Concurrent_Queue_And_Sync task 2 end");
     });
     
-    dispatch_sync(aque, ^{
+    /*
+     在同步队列中向当前同步队列异步分派任务会造成死锁。
+     */
+    dispatch_async(dispatch_get_main_queue(), ^{
         NSLog(@"Concurrent_Queue_And_Sync task 3 start");
         sleep(3);
         NSLog(@"Concurrent_Queue_And_Sync task 3 end");
     });
+    
+    /*
+     下面这段代码运行时候会crash并输出 Thread 1: EXC_BAD_INSTRUCTION (code=EXC_I386_INVOP, subcode=0x0)
+     在同步队列中向当前同步队列同步分派任务会造成死锁。
+     由此可知主队列也是同步队列
+     */
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        
+    });
+
 }
 
 - (void)concurrentQueueAndAsync
@@ -197,17 +220,39 @@
     });
     
     dispatch_async(aque, ^{
+        /*
+         在异步队列中向当前异步队列同步分派任务不会造成死锁。
+         */
         NSLog(@"Concurrent_Queue_And_Async task 3 start");
-        sleep(3);
+        dispatch_sync(aque, ^{
+            NSLog(@"Concurrent_Queue_And_Sync task 4 start");
+            NSLog(@"Concurrent_Queue_And_Sync task 4 end");
+        });
         NSLog(@"Concurrent_Queue_And_Async task 3 end");
+    });
+    
+    dispatch_async(aque, ^{
+        /*
+         在异步队列中向当前异步队列异步分派任务不会造成死锁。
+         */
+        NSLog(@"Concurrent_Queue_And_Async task 5 start");
+        dispatch_async(aque, ^{
+            NSLog(@"Concurrent_Queue_And_Async task 6 start");
+            NSLog(@"Concurrent_Queue_And_Async task 6 end");
+        });
+        NSLog(@"Concurrent_Queue_And_Async task 5 end");
     });
 }
 
 - (void)serialQueueAndSync
 {
     dispatch_queue_t aque = dispatch_queue_create("com.my.serialQueueAndSync", DISPATCH_QUEUE_SERIAL);
-    
+    static const void* specificKey = &specificKey;
+    int value = 5;
+    dispatch_queue_set_specific(aque, specificKey, &value, NULL);
     dispatch_sync(aque, ^{
+        NSThread *current = [NSThread  currentThread];
+        NSLog(@"current thread is %@",current);
         NSLog(@"Serial_Queue_And_Sync task 1 start");
         sleep(2);
         NSLog(@"Serial_Queue_And_Sync task 1 end");
@@ -219,10 +264,36 @@
         NSLog(@"Serial_Queue_And_Sync task 2 end");
     });
     
-    dispatch_sync(aque, ^{
-        NSLog(@"Serial_Queue_And_Sync task 3 start");
-        sleep(3);
-        NSLog(@"Serial_Queue_And_Sync task 3 end");
+    dispatch_async(aque, ^{
+        NSLog(@"Concurrent_Queue_And_Async task 3 start");
+        /*
+         下面这段代码运行时候会crash并输出 Thread 1: EXC_BAD_INSTRUCTION (code=EXC_I386_INVOP, subcode=0x0)
+         在同步队列中向当前同步队列同步分派任务会造成死锁。
+         */
+        
+        void *getValue = dispatch_get_specific(specificKey);
+        /*
+         通过在创建queue时候设置 dispatch_queue_set_specific
+         在调用block时候 获取 dispatch_get_specific
+         来判断当前队列是否与要执行同步分派的任务相同
+         */
+        if (getValue == NULL) {
+            dispatch_sync(aque, ^{
+                NSLog(@"Concurrent_Queue_And_Sync task 4 start");
+                NSLog(@"Concurrent_Queue_And_Sync task 4 end");
+            });
+            NSLog(@"Concurrent_Queue_And_Async task 3 end");
+        }
+        
+        const char *label = dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL);
+        if (label != NULL) {
+            NSString *labelString = [NSString stringWithUTF8String:label];
+            NSLog(@"label %@",labelString);
+            /*
+             通过判断当前队列的label也可以防止死锁
+             */
+        }
+       
     });
 }
 

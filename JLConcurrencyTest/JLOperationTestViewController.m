@@ -76,6 +76,9 @@
 
 - (void)invocationOperation
 {
+    /*
+     非异步操作
+     */
     NSInvocationOperation * invocationOpt = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(task) object:nil];
     [invocationOpt setCompletionBlock:^{
         NSLog(@"invocationOpt was done");
@@ -85,61 +88,87 @@
 
 - (void)blockOperation
 {
+    /*
+     异步操作，不通的block可能会被分配到不通的线程执行，所有block都执行完毕后该NSBlockOperation被标记为执行完毕
+     */
     NSBlockOperation *blockOpt = [NSBlockOperation blockOperationWithBlock:^{
         NSLog(@"blockOpt 1");
+        NSLog(@"current tread %@",[NSThread currentThread]);
         sleep(2);
     }];
     [blockOpt addExecutionBlock:^{
         NSLog(@"blockOpt 2");
+        NSLog(@"current tread %@",[NSThread currentThread]);
     }];
     [blockOpt setCompletionBlock:^{
         NSLog(@"blockOpt was done");
+        NSLog(@"current tread %@",[NSThread currentThread]);
     }];
     [blockOpt start];
 }
 
 - (void)dependencyOperationes
 {
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    /**
+     相较于GCD队列OperationQueue可以更方便的指定队列中同时执行的最大任务数量，及指定队列中任务的依赖关系。
+     */
+    NSOperationQueue *aqueue = [[NSOperationQueue alloc] init];
+    NSOperationQueue *bqueue = [[NSOperationQueue alloc] init];
+//    queue.maxConcurrentOperationCount = 5;
     NSBlockOperation *blockOpt1 = [NSBlockOperation blockOperationWithBlock:^{
-        NSLog(@"blockOpt1");
+        NSLog(@"blockOpt in queue 1");
+        NSLog(@"current tread %@",[NSThread currentThread]);
         sleep(2);
     }];
-
-    NSBlockOperation *blockOpt2 = [NSBlockOperation blockOperationWithBlock:^{
-        NSLog(@"blockOpt2");
-    }];
-    NSBlockOperation *blockOpt3 = [NSBlockOperation blockOperationWithBlock:^{
-        NSLog(@"blockOpt3");
+    [blockOpt1 addExecutionBlock:^{
+        NSLog(@"blockOpt in queue 2");
+        NSLog(@"current tread %@",[NSThread currentThread]);
+        sleep(2);
     }];
     
+    NSBlockOperation *blockOpt2 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"blockOpt in queue 3");
+        NSLog(@"current tread %@",[NSThread currentThread]);
+    }];
+    NSBlockOperation *blockOpt3 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"blockOpt in queue 4");
+        NSLog(@"current tread %@",[NSThread currentThread]);
+    }];
+    
+    /**
+     操作的依赖通过依赖者对被依赖者相关属性的KVO来实现
+     */
     [blockOpt3 addDependency:blockOpt1];
     [blockOpt3 addDependency:blockOpt2];
+    
     
 //    [blockOpt1 start];
 //    [blockOpt2 start];
 //    [blockOpt3 start];
-    [queue addOperation:blockOpt3];
-    [queue addOperation:blockOpt2];
-    [queue addOperation:blockOpt1];
+    
+    [aqueue addOperation:blockOpt3];
+    [aqueue addOperation:blockOpt2];
+    [bqueue addOperation:blockOpt1];
     
 }
 
-/**
- opreation 直接通过 start 执行的时候将会在当前线程同步执行，如果房屋queue中则会异步执行，
- 相较于dispatch operation可以取消任务的执行。
- */
 - (void)nonconcurrentOperationes
 {
-    
+    /**
+     opreation 直接通过 start 执行的时候将会在当前线程同步执行，如果添加到queue中则会异步执行，
+     */
     JLTestNonconcurrentOperation *tnOpt = [[JLTestNonconcurrentOperation alloc] init];
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [queue addOperation:tnOpt];
-//    [tnOpt start];
+    [tnOpt start];
 }
 
 - (void)concurrentOperationes
 {
+    /**
+     自定义的opreation 直接通过 start 触发并想异步执行的话需要自行实现start方法
+     并在start方法中新建线程对main方法进行调用。
+     */
     JLTestConcurrentOperation *tnOpt = [[JLTestConcurrentOperation alloc] init];
     [tnOpt start];
 }

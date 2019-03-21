@@ -12,3 +12,6 @@ An iOS concurrency demo .
 <a href= "https://www.raywenderlich.com/63338/grand-central-dispatch-in-depth-part-1">Grand Central Dispatch In-Depth: Part 1/2</a>
 
 <a href= "https://www.raywenderlich.com/63338/grand-central-dispatch-in-depth-part-2">Grand Central Dispatch In-Depth: Part 2/2</a>
+
+###博客文章
+https://blog.ibireme.com/2015/05/18/runloop/

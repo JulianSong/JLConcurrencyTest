@@ -84,7 +84,8 @@
     BOOL moreWorkToDo = YES;
     BOOL exitNow = NO;
     NSRunLoop* runLoop = [NSRunLoop currentRunLoop];
-    
+    [runLoop addPort:[NSMachPort port] forMode:NSRunLoopCommonModes];
+    //RunLoop 启动前内部必须要有至少一个 Timer/Observer/Source 不然会被推出
     // Add the exitNow BOOL to the thread dictionary.
     NSMutableDictionary* threadDict = [[NSThread currentThread] threadDictionary];
     [threadDict setValue:[NSNumber numberWithBool:exitNow] forKey:@"ThreadShouldExitNow"];
